@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"
+            integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+            crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rivets/0.9.4/rivets.bundled.min.js"
+            type="application/javascript"></script>
+
+    <script type="application/javascript"
+            src="https://cdn.rawgit.com/monkeecreate/jquery.simpleWeather/master/jquery.simpleWeather.min.js"></script>
+
+    <script type="application/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-dateFormat/1.0/jquery.dateFormat.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Cinzel|Droid+Sans" rel="stylesheet">
+    <link href="weather.css" rel="stylesheet">
+</head>
+<body>
+
+<style type="text/css" scoped>
+    body {
+        font-family: 'Droid Sans', sans-serif;
+    }
+
+    body, html, .carousel, .carousel-inner, .item, #wikipedia {
+        height: 100vh;
+        width: 100vw;
+        /*overflow: hidden;*/
+    }
+
+    .clock {
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        z-index: 2000;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .clock h1 {
+        font-size: 1400%;
+    }
+
+    .clock h2 {
+        font-size: 300%;
+    }
+
+    .carousel-indicators {
+        position: absolute;
+        bottom: 10px;
+    }
+
+    .item {
+        background-color: #EEE;
+    }
+
+    #weather-wrapper {
+        background-color: rgba(50, 50, 50, 0.4);
+        display: inline-block;
+        border-radius: 20px;
+        margin-top: 5rem;
+        padding: 3rem;
+    }
+
+    .carousel-indicators {
+        background-color: rgba(50, 50, 50, 0.7);
+        border-radius: 20px;
+        display: inline-block;
+        padding: 1rem 3rem;
+        width: 150px;
+        margin: 0 auto;
+        left: 0;
+        right: 0;
+    }
+
+    iframe {
+        border: 0;
+    }
+
+</style>
+
+<button class="btn btn-default" type="submit" onclick="data.requestFullscreen(document.getElementById('page'));"
+        style="position: absolute; top: 10px; right: 10px; z-index: 20000;">Full screen
+</button>
+
+<div id="page">
+
+    <div class="carousel slide" data-ride="carousel" id="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#carousel" data-slide-to="0" class="active"></li>
+            <li data-target="#carousel" data-slide-to="1"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="item active" id="weather-tab">
+                <div id="weather-wrapper" class="center-block">
+                    <div class="text-center clock">
+                        <h1 rv-text="data.time"></h1>
+                        <h2 rv-text="data.date"></h2>
+                    </div>
+                    <div id="weather"></div>
+                </div>
+            </div>
+            <div class="item">
+                <iframe id="wikipedia" src="https://en.wikipedia.org/wiki/Special:Random"></iframe>
+            </div>
+        </div>
+
+        <a class="left carousel-control" href="#carousel" role="button" data-slide="prev">
+            <span class="icon-prev" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#carousel" role="button" data-slide="next">
+            <span class="icon-next" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+
+<script type="application/javascript">
+    var data = function () {
+        var carousel = $("#carousel");
+        carousel.carousel({
+            interval: 10000
+        });
+        carousel.on('slide.bs.carousel', function (e) {
+            carousel.find(".active").find("#wikipedia").each(function () {
+                // Update page
+                this.src = this.src;
+            });
+        });
+
+        // Reload once in a while
+//        setInterval(function () {
+//            location.reload();
+//        }, 3600000);
+
+        return {
+            time: "",
+            requestFullscreen: function (el) {
+                var rfs = el.requestFullscreen
+                        || el.webkitRequestFullScreen
+                        || el.mozRequestFullScreen
+                        || el.msRequestFullscreen;
+
+                rfs.call(el);
+            }
+        }
+    }();
+
+    (function () {
+        rivets.bind(document.body, {data: data});
+
+        $(function () {
+            function updateTime() {
+                var date = new Date();
+                data.time = $.format.date(date, "HH:mm");
+                data.date = $.format.date(date, "d. MMMM yyyy");
+            }
+
+            setInterval(updateTime, 1000);
+            updateTime()
+        });
+    })();
+
+    /* Does your browser support geolocation? */
+    if ("geolocation" in navigator) {
+        $('.js-geolocation').show();
+    } else {
+        $('.js-geolocation').hide();
+    }
+
+    /*
+     * Test Locations
+     * Austin lat/long: 30.2676,-97.74298
+     * Austin WOEID: 2357536
+     */
+    $(document).ready(function () {
+        loadWeather('Copenhagen', ''); //@params location, woeid
+    });
+    function loadWeather(location, woeid) {
+        $.simpleWeather({
+            location: location,
+            woeid: woeid,
+            unit: 'c',
+            success: function (weather) {
+                console.log(weather);
+                html = '<div><h2><i class="icon-' + weather.code + '"></i> ' + weather.temp + '&deg;' + weather.units.temp + '</h2>';
+                html += '<ul>';
+                html += '<li class="currently">' + weather.currently + ', ' + weather.text + '</li>';
+                html += '<li>' + weather.sunrise + '/' + weather.sunset + '</li></ul></div>';
+
+                $("#weather").html(html);
+            },
+            error: function (error) {
+                $("#weather").html('<p>' + error + '</p>');
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
