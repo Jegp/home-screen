@@ -142,8 +142,7 @@
             $.getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&list=random&titles=1&rnnamespace=0&rnlimit=1&callback=?", {}, function (data) {
                 var pageTitle = data.query.random[0].title;
                 console.log(encodeURI(pageTitle));
-                $.getJSON("https://en.wikipedia.org/w/api.php?action=parse&page=" + encodeURI(pageTitle) + "&prop=text&section=1&format=json&callback=?", {}, function (newData) {
-                    console.log(newData);
+                $.getJSON("https://en.wikipedia.org/w/api.php?action=parse&page=" + encodeURI(pageTitle) + "&prop=text&disableeditsection=1&mobileformat=1&format=json&callback=?", {}, function (newData) {
                     var pageHtml = newData.parse.text["*"];
                     $("#wikipedia-title").html(pageTitle);
                     $("#wikipedia-body").html(pageHtml)
