@@ -20,20 +20,7 @@ DO NOT hotlink the assets/font included in this demo. If you wish to use the sam
     font-style: normal;
 }
 
-#weather {
-    padding: 15px 25px;
-    /*width: 500px;*/
-    margin: 0px auto;
-    text-align: center;
-    text-transform: uppercase;
-}
-#weather-tab {
-    background: url(/copenhagen.jpeg) top center no-repeat;
-    background-size: 100% 100%;
-    text-align: center;
-}
-
-i {
+#weather i {
     color: #fff;
     font-family: weather;
     font-size: 150px;

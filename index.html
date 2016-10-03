@@ -6,16 +6,16 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Latest compiled and minified CSS -->
+    <!--Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-    <!-- JQuery -->
+    <!--JQuery -->
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"
             integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
             crossorigin="anonymous"></script>
 
-    <!-- Latest compiled and minified JavaScript -->
+    <!--Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous"></script>
@@ -34,63 +34,59 @@
 </head>
 <body>
 
-<style type="text/css" scoped>
-    body {
+<style type="text/css">
+    html, body, #page {
         font-family: 'Droid Sans', sans-serif;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        padding: 0;
     }
 
-    body, html, .carousel, .carousel-inner, .item, #wikipedia {
-        height: 100vh;
-        width: 100vw;
-        /*overflow: hidden;*/
+    #page {
+        background: url(/copenhagen.jpeg) top center no-repeat;
+        background-size: 100% 100%;
+        background-color: transparent;
+        padding: 1% 0;
     }
 
     .clock {
+        background-color: rgba(50, 50, 50, 0.5);
+        border-radius: 40px;
         color: #fff;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         z-index: 2000;
-        width: 100%;
+        width: 60%;
         margin: 0 auto;
     }
 
-    .clock h1 {
+    h1 {
         font-size: 1400%;
     }
 
-    .clock h2 {
-        font-size: 300%;
+    #weather-tab h2 {
+        color: #FFF;
+        font-size: 340%;
     }
 
-    .carousel-indicators {
-        position: absolute;
-        bottom: 10px;
-    }
-
-    .item {
-        background-color: #EEE;
-    }
-
-    #weather-wrapper {
-        background-color: rgba(50, 50, 50, 0.4);
-        display: inline-block;
-        border-radius: 20px;
-        margin-top: 5rem;
+    #wikipedia-wrapper {
+        background-color: rgba(244, 244, 244, 0.9);
+        border: 2px solid #777;
+        border-radius: 40px;
+        margin: 0 auto;
+        width: 70%;
         padding: 3rem;
     }
 
-    .carousel-indicators {
-        background-color: rgba(50, 50, 50, 0.7);
-        border-radius: 20px;
-        display: inline-block;
-        padding: 1rem 3rem;
-        width: 150px;
-        margin: 0 auto;
-        left: 0;
-        right: 0;
+    #wikipedia-title {
+        font-size: 400%;
+    }
+    #wikipedia-body {
+        font-size: 200%;
     }
 
-    iframe {
-        border: 0;
+    .center {
+        text-align: center;
     }
 
 </style>
@@ -101,23 +97,20 @@
 
 <div id="page">
 
+    <div class="text-center clock">
+        <h1 rv-text="data.time"></h1>
+    </div>
     <div class="carousel slide" data-ride="carousel" id="carousel">
-        <ol class="carousel-indicators">
-            <li data-target="#carousel" data-slide-to="0" class="active"></li>
-            <li data-target="#carousel" data-slide-to="1"></li>
-        </ol>
         <div class="carousel-inner">
-            <div class="item active" id="weather-tab">
-                <div id="weather-wrapper" class="center-block">
-                    <div class="text-center clock">
-                        <h1 rv-text="data.time"></h1>
-                        <h2 rv-text="data.date"></h2>
-                    </div>
-                    <div id="weather"></div>
-                </div>
+            <div class="item active center" id="weather-tab">
+                <h2 rv-text="data.date"></h2>
+                <div id="weather"></div>
             </div>
             <div class="item">
-                <iframe id="wikipedia" src="https://en.wikipedia.org/wiki/Special:Random"></iframe>
+                <div id="wikipedia-wrapper">
+                    <h2 id="wikipedia-title"></h2>
+                    <div id="wikipedia-body"></div>
+                </div>
             </div>
         </div>
 
@@ -140,15 +133,26 @@
         });
         carousel.on('slide.bs.carousel', function (e) {
             carousel.find(".active").find("#wikipedia").each(function () {
-                // Update page
-                this.src = this.src;
+                getRandomWikipediaArticle()
             });
         });
 
+        getRandomWikipediaArticle();
+        function getRandomWikipediaArticle() {
+            $.getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&list=random&titles=1&rnnamespace=0&rnlimit=1&callback=?", {}, function (data) {
+                var pageTitle = data.query.random[0].title;
+                $.getJSON("http://en.wikipedia.org/w/api.php?action=parse&page=" + encodeURI(pageTitle) + "&prop=text&section=1&format=json&callback=?", {}, function (newData) {
+                    var pageHtml = newData.parse.text["*"];
+                    $("#wikipedia-title").html(pageTitle);
+                    $("#wikipedia-body").html(pageHtml)
+                });
+            });
+        }
+
         // Reload once in a while
-//        setInterval(function () {
-//            location.reload();
-//        }, 3600000);
+        setInterval(function () {
+            location.reload();
+        }, 3600000);
 
         return {
             time: "",
@@ -192,6 +196,10 @@
      */
     $(document).ready(function () {
         loadWeather('Copenhagen', ''); //@params location, woeid
+        // Refresh every 5 minutes
+        setInterval(function () {
+            loadWeather('Copenhagen', '')
+        }, 300000);
     });
     function loadWeather(location, woeid) {
         $.simpleWeather({
@@ -199,7 +207,6 @@
             woeid: woeid,
             unit: 'c',
             success: function (weather) {
-                console.log(weather);
                 html = '<div><h2><i class="icon-' + weather.code + '"></i> ' + weather.temp + '&deg;' + weather.units.temp + '</h2>';
                 html += '<ul>';
                 html += '<li class="currently">' + weather.currently + ', ' + weather.text + '</li>';
