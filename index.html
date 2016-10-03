@@ -140,11 +140,9 @@
         getRandomWikipediaArticle();
         function getRandomWikipediaArticle() {
             $.getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&list=random&titles=1&rnnamespace=0&rnlimit=1&callback=?", {}, function (data) {
-                console.log(data);
                 var pageTitle = data.query.random[0].title;
-                console.log(pageTitle);
                 console.log(encodeURI(pageTitle));
-                $.getJSON("http://en.wikipedia.org/w/api.php?action=parse&page=" + encodeURI(pageTitle) + "&prop=text&section=1&format=json&callback=?", {}, function (newData) {
+                $.getJSON("https://en.wikipedia.org/w/api.php?action=parse&page=" + encodeURI(pageTitle) + "&prop=text&section=1&format=json&callback=?", {}, function (newData) {
                     console.log(newData);
                     var pageHtml = newData.parse.text["*"];
                     $("#wikipedia-title").html(pageTitle);
