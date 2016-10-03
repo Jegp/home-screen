@@ -44,7 +44,7 @@
     }
 
     #page {
-        background: url(/copenhagen.jpeg) top center no-repeat;
+        background: url(copenhagen.jpeg) top center no-repeat;
         background-size: 100% 100%;
         background-color: transparent;
         padding: 1% 0;
@@ -140,8 +140,10 @@
         getRandomWikipediaArticle();
         function getRandomWikipediaArticle() {
             $.getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&list=random&titles=1&rnnamespace=0&rnlimit=1&callback=?", {}, function (data) {
+                console.log(data);
                 var pageTitle = data.query.random[0].title;
                 $.getJSON("http://en.wikipedia.org/w/api.php?action=parse&page=" + encodeURI(pageTitle) + "&prop=text&section=1&format=json&callback=?", {}, function (newData) {
+                    console.log(newData);
                     var pageHtml = newData.parse.text["*"];
                     $("#wikipedia-title").html(pageTitle);
                     $("#wikipedia-body").html(pageHtml)
